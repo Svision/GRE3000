@@ -78,10 +78,10 @@ struct ContentView: View {
                             .frame(maxWidth: proxy.size.width / 1.5)
                             .multilineTextAlignment(.center)
                     }
-                    Spacer()
                     .onTapGesture {
                         pronunce(word: word.en)
                     }
+                    Spacer()
                     Spacer()
                 }
             }
