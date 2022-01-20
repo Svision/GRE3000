@@ -9,33 +9,34 @@ import SwiftUI
 import CoreXLSX
 
 struct ContentView: View {
-    @State var num: Int = 1
-    @State var enableAutoPronunce = true
+    let userDefaults = UserDefaults.standard
     @EnvironmentObject var viewModel: AppViewModel
     
     var body: some View {
-        let word = Word(word: viewModel.words[num], phonetics: viewModel.phoneticses[num], paraphrase: viewModel.paraphrases[num])
+        let word = Word(word: viewModel.words[viewModel.num], phonetics: viewModel.phoneticses[viewModel.num], paraphrase: viewModel.paraphrases[viewModel.num])
         GeometryReader { proxy in
             ZStack {
                 HStack(spacing: 0) {
                     Button {
-                        if num > 1 {
-                            num -= 1
+                        if viewModel.num > 1 {
+                            viewModel.num -= 1
+                            userDefaults.set(viewModel.num, forKey: "num")
                         }
-                        if enableAutoPronunce {
-                            pronunce(word: viewModel.words[num])
+                        if viewModel.autoPronunce {
+                            pronunce(word: viewModel.words[viewModel.num])
                         }
                     } label: {
                         Rectangle()
                             .foregroundColor(.clear)
                     }
                     Button {
-                        if num == 3000 {
-                            num = 0
+                        if viewModel.num == 3000 {
+                            viewModel.num = 0
                         }
-                        num += 1
-                        if enableAutoPronunce {
-                            pronunce(word: viewModel.words[num])
+                        viewModel.num += 1
+                        userDefaults.set(viewModel.num, forKey: "num")
+                        if viewModel.autoPronunce {
+                            pronunce(word: viewModel.words[viewModel.num])
                         }
                     } label: {
                         Rectangle()
@@ -45,14 +46,15 @@ struct ContentView: View {
                 
                 VStack {
                     HStack {
-                        Text("\(num)")
+                        Text("\(viewModel.num)")
                             .underline()
                             .padding()
                         Spacer()
                         Button {
-                            enableAutoPronunce.toggle()
+                            viewModel.autoPronunce.toggle()
+                            userDefaults.set(viewModel.autoPronunce, forKey: "autoPronunce")
                         } label: {
-                            if enableAutoPronunce {
+                            if viewModel.autoPronunce {
                                 Image(systemName: "speaker.wave.3")
                             }
                             else {
@@ -76,6 +78,7 @@ struct ContentView: View {
                             .frame(maxWidth: proxy.size.width / 1.5)
                             .multilineTextAlignment(.center)
                     }
+                    Spacer()
                     .onTapGesture {
                         pronunce(word: word.en)
                     }

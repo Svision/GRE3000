@@ -11,6 +11,8 @@ import SwiftUI
 
 class AppViewModel: ObservableObject {
     let userDefaults = UserDefaults.standard
+    @Published var num: Int = -1
+    @Published var autoPronunce = true
     @Published var words: [String] = ["error"]
     @Published var phoneticses: [String] = ["[error]"]
     @Published var paraphrases: [String] = ["错误"]
@@ -18,7 +20,9 @@ class AppViewModel: ObservableObject {
     init () {
         if userDefaults.stringArray(forKey: "words") == nil
             || userDefaults.stringArray(forKey: "phoneticses") == nil
-            || userDefaults.stringArray(forKey: "paraphrases") == nil {
+            || userDefaults.stringArray(forKey: "paraphrases") == nil
+            || userDefaults.object(forKey: "num") == nil
+            || userDefaults.object(forKey: "autoPronunce") == nil {
             buildDB()
         }
         else {
@@ -53,6 +57,12 @@ class AppViewModel: ObservableObject {
                         paraphrases = worksheet.cells(atColumns: [ColumnReference("M")!])
                             .compactMap { $0.stringValue(sharedStrings) }
                         userDefaults.set(paraphrases, forKey: "paraphrases")
+                        
+                        num = 1
+                        userDefaults.set(num, forKey: "num")
+                        
+                        autoPronunce = true
+                        userDefaults.set(autoPronunce, forKey: "autoPronunce")
                         print("Finished saving.")
                     }
                 }
@@ -65,6 +75,8 @@ class AppViewModel: ObservableObject {
         words = userDefaults.stringArray(forKey: "words")!
         phoneticses = userDefaults.stringArray(forKey: "phoneticses")!
         paraphrases = userDefaults.stringArray(forKey: "paraphrases")!
+        num = userDefaults.integer(forKey: "num")
+        autoPronunce = userDefaults.bool(forKey: "autoPronunce")
         print("Reading completed.")
     }
 }
